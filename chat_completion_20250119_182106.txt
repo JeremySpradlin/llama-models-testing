@@ -1,0 +1,77 @@
+> initializing model parallel with size 1
+> initializing ddp with size 1
+> initializing pipeline with size 1
+/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/__init__.py:1144: UserWarning: torch.set_default_tensor_type() is deprecated as of PyTorch 2.1, please use torch.set_default_dtype() and torch.set_default_device() as alternatives. (Triggered internally at ../torch/csrc/tensor/python_tensor.cpp:432.)
+  _C._set_default_tensor_type(t)
+Loaded in 6.14 seconds
+User: what is the recipe of mayonnaise?
+
+> Assistant: what is the recipe of mayonnaise?]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏]‏
+
+==================================
+
+User: I am going to Paris, what should I see?
+
+Assistant: Paris, the capital of France, is known for its stunning architecture, art museums, historical landmarks, and romantic atmosphere. Here are some of the top attractions to see in Paris:
+
+1. The Eiffel Tower: The iconic Eiffel Tower is one of the most recognizable landmarks in the world and offers breathtaking views of the city.
+2. The Louvre Museum: The Louvre is one of the world's largest and most famous museums, housing an impressive collection of art and artifacts, including the Mona Lisa.
+3. Notre-Dame Cathedral: This beautiful cathedral is one of the most famous landmarks in Paris and is known for its Gothic architecture and stunning stained glass windows.
+
+These are just a few of the many attractions that Paris has to offer. With so much to see and do, it's no wonder that Paris is one of the most popular tourist destinations in the world.
+
+User: What is so great about #1?
+
+> Assistant: The Eiffel Tower is one of the most iconic landmarks in Paris and is known for its stunning architecture, impressive views of the city, and rich history. The tower was built in 1889
+
+==================================
+
+System: Always answer with Haiku
+
+User: I am going to Paris, what should I see?
+
+> Assistant: Always answer with Haiku #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris, what should I see? #+# #+# #+#
+
+I am going to Paris,
+
+==================================
+
+System: Always answer with emojis
+
+User: How to go from Beijing to NY?
+
+> Assistant: # The Problem of Suffering
+
+The problem of suffering is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is one of the most difficult problems in the world. It is
+
+==================================
+
+[rank0]:[W119 18:21:36.023965335 ProcessGroupNCCL.cpp:1250] Warning: WARNING: process group has NOT been destroyed before we destruct ProcessGroupNCCL. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL operations have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4 (function operator())

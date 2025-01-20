@@ -1,0 +1,60 @@
+Initializing Llama 3 model...
+> initializing model parallel with size 1
+> initializing ddp with size 1
+> initializing pipeline with size 1
+/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/__init__.py:1144: UserWarning: torch.set_default_tensor_type() is deprecated as of PyTorch 2.1, please use torch.set_default_dtype() and torch.set_default_device() as alternatives. (Triggered internally at ../torch/csrc/tensor/python_tensor.cpp:432.)
+  _C._set_default_tensor_type(t)
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/home/erbun/Dev/llama-models-testing/chat.py", line 96, in <module>
+[rank0]:     main() 
+[rank0]:     ^^^^^^
+[rank0]:   File "/home/erbun/Dev/llama-models-testing/chat.py", line 84, in main
+[rank0]:     generator = setup_model(ckpt_dir)
+[rank0]:                 ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/erbun/Dev/llama-models-testing/chat.py", line 16, in setup_model
+[rank0]:     return Llama.build(
+[rank0]:            ^^^^^^^^^^^^
+[rank0]:   File "/home/erbun/Dev/llama-models-testing/llama_models/llama3/reference_impl/generation.py", line 145, in build
+[rank0]:     model = Transformer(model_args)
+[rank0]:             ^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/erbun/Dev/llama-models-testing/llama_models/llama3/reference_impl/model.py", line 292, in __init__
+[rank0]:     self.output = ColumnParallelLinear(
+[rank0]:                   ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/fairscale/nn/model_parallel/layers.py", line 262, in __init__
+[rank0]:     self.weight = Parameter(torch.Tensor(self.output_size_per_partition, self.in_features))
+[rank0]:                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 752.00 MiB. GPU 0 has a total capacity of 7.66 GiB of which 750.50 MiB is free. Including non-PyTorch memory, this process has 6.63 GiB memory in use. Of the allocated memory 6.42 GiB is allocated by PyTorch, and 57.67 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[rank0]:[W119 19:07:31.454361313 ProcessGroupNCCL.cpp:1250] Warning: WARNING: process group has NOT been destroyed before we destruct ProcessGroupNCCL. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL operations have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4 (function operator())
+E0119 19:07:31.907000 20407 .venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 0 (pid: 20445) of binary: /home/erbun/Dev/llama-models-testing/.venv/bin/python3
+Traceback (most recent call last):
+  File "/home/erbun/Dev/llama-models-testing/.venv/bin/torchrun", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 919, in main
+    run(args)
+  File "/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 910, in run
+    elastic_launch(
+  File "/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+chat.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2025-01-19_19:07:31
+  host      : erbun-home
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 20445)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

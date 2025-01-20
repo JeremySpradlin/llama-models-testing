@@ -283,6 +283,199 @@ This should provide a cleaner setup while still managing GPU memory through the 
 
 ---
 
+_**User**_
+
+can you modify the run.sh script so that it saves an output of the run to a local file titled "chat_completion_{TIMEDATE}.txt" please?
+
+---
+
+_**Assistant**_
+
+
+
+Here's the modified script that saves the output to a timestamped file:
+
+```shell:run.sh
+#!/bin/bash
+
+# Set distributed training environment variables
+export MASTER_ADDR=localhost
+export MASTER_PORT=29500
+export WORLD_SIZE=1
+export RANK=0
+
+# Create timestamp for the output file
+TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
+OUTPUT_FILE="chat_completion_${TIMESTAMP}.txt"
+
+CHECKPOINT_DIR=~/.llama/checkpoints/Llama3.2-3B
+PYTHONPATH=$(git rev-parse --show-toplevel) torchrun \
+    --nproc_per_node=1 \
+    --master_addr=localhost \
+    --master_port=29500 \
+    llama_models/scripts/example_chat_completion.py \
+    $CHECKPOINT_DIR \
+    --max_batch_size=1 \
+    --max_seq_len=256 2>&1 | tee "${OUTPUT_FILE}"
+
+echo "Output has been saved to ${OUTPUT_FILE}"
+```
+
+Changes made:
+1. Added timestamp creation using `date` command
+2. Created output filename using the timestamp
+3. Added `2>&1 | tee "${OUTPUT_FILE}"` to:
+   - Capture both stdout and stderr (`2>&1`)
+   - Save the output to file while still showing it in terminal (`tee`)
+4. Added a confirmation message showing where the output was saved
+
+The output files will be named like `chat_completion_20250119_181500.txt` (for January 19, 2025, 18:15:00).
+
+---
+
+_**User**_
+
+Awesome that works great.  Can you modify the chat.sh so that it saves its output in a similarly fashion please? 
+
+---
+
+_**Assistant**_
+
+
+
+Here's the modified `chat.sh` to save output in a similar way:
+
+```shell:chat.sh
+#!/bin/bash
+
+# Set timestamp for output file
+TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
+OUTPUT_FILE="chat_${TIMESTAMP}.txt"
+
+# Run the chat script and tee output to file
+PYTHONPATH=$(git rev-parse --show-toplevel) python3 chat.py 2>&1 | tee "${OUTPUT_FILE}"
+
+echo "Output has been saved to ${OUTPUT_FILE}"
+```
+
+This follows the same pattern as `run.sh`:
+1. Creates a timestamp using the same format
+2. Names the output file with "chat_" prefix instead of "chat_completion_"
+3. Uses `tee` to capture all output while still showing it in the terminal
+4. Shows a confirmation message at the end
+
+The output files will be named like `chat_20250119_181500.txt`.
+
+---
+
+_**User**_
+
+Is there anything in here about a token budget? 
+
+---
+
+_**Assistant**_
+
+Looking through the provided files, I don't see any explicit token budget settings. However, there are two related parameters that indirectly affect token usage:
+
+1. `max_seq_len=256` - This limits the total sequence length (context window) to 256 tokens
+2. `max_batch_size=1` - This limits how many sequences are processed at once
+
+If you want to add a token budget setting, we would need to modify either the Python scripts (`chat.py` or `example_chat_completion.py`) to include this parameter. The token budget would typically control how many tokens the model can generate in its response.
+
+Would you like me to help you add a token budget parameter to either script? This could be useful for:
+1. Controlling response length
+2. Managing memory usage
+3. Potentially reducing costs if using an API-based model
+
+---
+
+_**User**_
+
+Is this chat loop attempting to pend all previous messages onto the new ones? 
+
+---
+
+_**Assistant**_
+
+Yes, looking at the `chat.py` file, the chat loop is maintaining the entire conversation history in the `conversation` list and sending it with each new request. Here's the relevant part:
+
+```python:chat.py
+def chat_loop(
+    generator: Llama,
+    system_prompt: Optional[str] = None,
+    temperature: float = 0.6,
+    top_p: float = 0.9,
+    max_gen_len: Optional[int] = None,
+):
+    """Run an interactive chat loop with the model."""
+    # Initialize conversation history
+    conversation: List[RawMessage] = []
+    
+    # Add system prompt if provided
+    if system_prompt:
+        conversation.append(RawMessage(role="system", content=system_prompt))
+    
+    while True:
+        # ... get user input ...
+        
+        # Add user message to conversation
+        conversation.append(RawMessage(role="user", content=user_input))
+        
+        # Get model's response with entire conversation history
+        result = generator.chat_completion(
+            conversation,  # Entire conversation history is sent here
+            max_gen_len=max_gen_len,
+            temperature=temperature,
+            top_p=top_p,
+        )
+        
+        # Add assistant's response to conversation history
+        assistant_message = result.generation
+        conversation.append(assistant_message)
+```
+
+This could be contributing to the memory issues since each request includes all previous messages. The only time the conversation history is cleared is when:
+1. The user types 'clear'
+2. The user sets a new system prompt (which resets to just the system prompt)
+
+Would you like me to show you how to modify this to maintain a limited conversation window?
+
+---
+
+_**User**_
+
+So right now I've got the max_seq_len set to 512 - That seems to work for a single question, and I have to clear after each message.  My max_batch_size is set to 4, what would reducing it down to 1 do? 
+
+---
+
+_**Assistant**_
+
+
+
+Reducing `max_batch_size` from 4 to 1 would affect how many sequences the model processes in parallel. Here's what each setting means:
+
+- `max_batch_size=4`: The model can process up to 4 sequences simultaneously. This is more memory-intensive but can be more efficient when processing multiple inputs at once.
+- `max_batch_size=1`: The model processes only one sequence at a time. This uses less memory but might be slightly slower if processing multiple inputs.
+
+In your chat application's case, since you're processing one user message at a time and clearing after each message, setting `max_batch_size=1` would:
+
+1. Reduce memory usage without much performance impact (since you're not batching messages anyway)
+2. Be more appropriate for the single-message usage pattern you're currently using
+3. Potentially help prevent out-of-memory errors
+
+You could modify either script to use `max_batch_size=1`:
+
+```shell:run.sh
+# or chat.sh
+    --max_batch_size=1 \
+    --max_seq_len=512 2>&1 | tee "${OUTPUT_FILE}"
+```
+
+Since you're already clearing after each message and not using batched processing, reducing the batch size to 1 would be a sensible optimization that could help with memory usage without negatively impacting your current usage pattern.
+
+---
+
 
 
 ---

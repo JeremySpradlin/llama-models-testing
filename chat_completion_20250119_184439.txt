@@ -1,0 +1,78 @@
+> initializing model parallel with size 1
+> initializing ddp with size 1
+> initializing pipeline with size 1
+/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/__init__.py:1144: UserWarning: torch.set_default_tensor_type() is deprecated as of PyTorch 2.1, please use torch.set_default_dtype() and torch.set_default_device() as alternatives. (Triggered internally at ../torch/csrc/tensor/python_tensor.cpp:432.)
+  _C._set_default_tensor_type(t)
+Loaded in 3.67 seconds
+User: what is the recipe of mayonnaise?
+
+> Assistant: The classic recipe of mayonnaise! Here's a simple and traditional recipe to make mayonnaise at home:
+
+**Ingredients:**
+
+* 2 large egg yolks
+* 1 tablespoon lemon juice or vinegar (white wine, apple cider, or white distilled vinegar)
+* 1/2 cup (120 ml) neutral-tasting oil, such as canola, grapeseed, or light olive oil
+* Salt, to taste (optional)
+
+**Instructions:**
+
+1. **Separate the egg yolks**: Crack 2 large egg yolks into a medium-sized bowl.
+2. **Whisk the egg yolks**: Whisk the egg yolks with a fork until they become light and frothy.
+3. **Add the lemon juice or vinegar**: Whisk in 1 tablespoon of lemon juice or vinegar to help stabilize the emulsion.
+4. **Slowly add the oil**: While continuously whisking the egg yolks, slowly pour in the oil in a thin, steady stream. Start with a very slow pour and gradually increase the flow as the mixture thickens.
+5. **Whisk until smooth**: Continue whisking until the mixture thickens
+
+==================================
+
+User: I am going to Paris, what should I see?
+
+Assistant: Paris, the capital of France, is known for its stunning architecture, art museums, historical landmarks, and romantic atmosphere. Here are some of the top attractions to see in Paris:
+
+1. The Eiffel Tower: The iconic Eiffel Tower is one of the most recognizable landmarks in the world and offers breathtaking views of the city.
+2. The Louvre Museum: The Louvre is one of the world's largest and most famous museums, housing an impressive collection of art and artifacts, including the Mona Lisa.
+3. Notre-Dame Cathedral: This beautiful cathedral is one of the most famous landmarks in Paris and is known for its Gothic architecture and stunning stained glass windows.
+
+These are just a few of the many attractions that Paris has to offer. With so much to see and do, it's no wonder that Paris is one of the most popular tourist destinations in the world.
+
+User: What is so great about #1?
+
+> Assistant: The Eiffel Tower! It's a must-see attraction in Paris, and here's why:
+
+1. **Iconic Architecture**: The Eiffel Tower is an engineering marvel and a masterpiece
+
+==================================
+
+System: Always answer with Haiku
+
+User: I am going to Paris, what should I see?
+
+> Assistant: Eiffel Tower high
+Louvre's ancient secrets wait
+Beauty in each view
+
+==================================
+
+System: Always answer with emojis
+
+User: How to go from Beijing to NY?
+
+> Assistant: 🗺️✈️🚂🗽️
+
+1️⃣ Fly from Beijing Capital International Airport (PEK) to John F. Kennedy International Airport (JFK) in New York City: ✈️
+🕰️ Flight duration: around 11 hours
+🚗 Taxi or Uber from airport to city: 🚗
+
+2️⃣ Take a train: 🚂
+🇨🇳 Take the high-speed train from Beijing West Railway Station to Shanghai Hongqiao Railway Station (around 4.5 hours)
+🇺🇸 Then take a flight from Shanghai to New York (around 17 hours)
+🚂 Or take the train from Beijing to Shanghai, then take a flight from Shanghai to New York (around 20 hours)
+
+3️⃣ Take a cruise ship: 🚣‍♀️
+🚢 Take a cruise from Shanghai or Qingdao to New York (around 30-40 days)
+
+🗽️ Note: These options may take longer than flying, but offer a unique travel experience!
+
+==================================
+
+[rank0]:[W119 18:45:01.220031566 ProcessGroupNCCL.cpp:1250] Warning: WARNING: process group has NOT been destroyed before we destruct ProcessGroupNCCL. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL operations have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4 (function operator())
