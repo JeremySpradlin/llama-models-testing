@@ -1,0 +1,13 @@
+Initializing Llama 3 model...
+> initializing model parallel with size 1
+> initializing ddp with size 1
+> initializing pipeline with size 1
+/home/erbun/Dev/llama-models-testing/.venv/lib/python3.12/site-packages/torch/__init__.py:1144: UserWarning: torch.set_default_tensor_type() is deprecated as of PyTorch 2.1, please use torch.set_default_dtype() and torch.set_default_device() as alternatives. (Triggered internally at ../torch/csrc/tensor/python_tensor.cpp:432.)
+  _C._set_default_tensor_type(t)
+Loaded in 12.58 seconds
+
+Welcome to Llama 3 Chat! Type 'quit' to exit, 'clear' to start a new conversation.
+You can also type 'system: <prompt>' to set a new system prompt.
+
+
+You: 

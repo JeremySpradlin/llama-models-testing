@@ -1,4 +1,4 @@
- #!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import os
 import subprocess
@@ -28,12 +28,8 @@ def chat_loop(
     max_gen_len: Optional[int] = None,
 ):
     """Run an interactive chat loop with the model."""
-    # Initialize conversation history
-    conversation: List[RawMessage] = []
-    
-    # Add system prompt if provided
-    if system_prompt:
-        conversation.append(RawMessage(role="system", content=system_prompt))
+    # Keep system prompt separate from conversation history
+    system_message = RawMessage(role="system", content=system_prompt) if system_prompt else None
     
     print("\nWelcome to Llama 3 Chat! Type 'quit' to exit, 'clear' to start a new conversation.")
     print("You can also type 'system: <prompt>' to set a new system prompt.\n")
@@ -46,33 +42,30 @@ def chat_loop(
         if user_input.lower() == 'quit':
             break
         elif user_input.lower() == 'clear':
-            conversation = []
-            if system_prompt:
-                conversation.append(RawMessage(role="system", content=system_prompt))
             print("\nConversation cleared!")
             continue
         elif user_input.lower().startswith('system:'):
             system_prompt = user_input[7:].strip()
-            conversation = [RawMessage(role="system", content=system_prompt)]
+            system_message = RawMessage(role="system", content=system_prompt)
             print("\nSystem prompt updated!")
             continue
         
-        # Add user message to conversation
-        conversation.append(RawMessage(role="user", content=user_input))
+        # Create current conversation with just system prompt (if any) and current message
+        current_messages = []
+        if system_message:
+            current_messages.append(system_message)
+        current_messages.append(RawMessage(role="user", content=user_input))
         
-        # Get model's response
+        # Get model's response with just current message
         result = generator.chat_completion(
-            conversation,
+            current_messages,
             max_gen_len=max_gen_len,
             temperature=temperature,
             top_p=top_p,
         )
         
-        # Add assistant's response to conversation history
-        assistant_message = result.generation
-        conversation.append(assistant_message)
-        
         # Print assistant's response
+        assistant_message = result.generation
         print(f"\nAssistant: {assistant_message.content}")
 
 def main():

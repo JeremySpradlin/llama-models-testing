@@ -476,6 +476,196 @@ Since you're already clearing after each message and not using batched processin
 
 ---
 
+_**User**_
+
+can you please walk me through what chat.py is doing please? 
+
+---
+
+_**Assistant**_
+
+I'll break down `chat.py` section by section:
+
+1. First, the setup function:
+```python:chat.py
+def setup_model(
+    ckpt_dir: str,
+    max_seq_len: int = 1024,  # Maximum length of input + output tokens
+    max_batch_size: int = 1,   # How many sequences to process at once
+    model_parallel_size: Optional[int] = None,
+) -> Llama:
+    """Initialize the Llama model."""
+    return Llama.build(
+        ckpt_dir=ckpt_dir,
+        max_seq_len=max_seq_len,
+        max_batch_size=max_batch_size,
+        model_parallel_size=model_parallel_size,
+    )
+```
+This function initializes the Llama model with your specified parameters. The key parameters are:
+- `max_seq_len`: Maximum number of tokens in a conversation (input + output)
+- `max_batch_size`: How many sequences to process simultaneously
+
+2. The main chat loop:
+```python:chat.py
+def chat_loop(
+    generator: Llama,
+    system_prompt: Optional[str] = None,
+    temperature: float = 0.6,    # Controls randomness (higher = more random)
+    top_p: float = 0.9,         # Controls diversity of responses
+    max_gen_len: Optional[int] = None,  # Maximum length of generated response
+):
+    # Initialize empty conversation history
+    conversation: List[RawMessage] = []
+```
+This function manages the chat interaction. It keeps track of the entire conversation history in the `conversation` list.
+
+3. Special Commands:
+```python:chat.py
+    # Handle special commands
+    if user_input.lower() == 'quit':
+        break
+    elif user_input.lower() == 'clear':
+        conversation = []  # Clears the conversation history
+        if system_prompt:
+            conversation.append(RawMessage(role="system", content=system_prompt))
+    elif user_input.lower().startswith('system:'):
+        system_prompt = user_input[7:].strip()  # Updates system prompt
+        conversation = [RawMessage(role="system", content=system_prompt)]
+```
+The script handles three special commands:
+- `quit`: Exits the chat
+- `clear`: Erases conversation history
+- `system: <prompt>`: Sets a new system prompt
+
+4. Message Processing:
+```python:chat.py
+    # Add user message to conversation
+    conversation.append(RawMessage(role="user", content=user_input))
+    
+    # Get model's response
+    result = generator.chat_completion(
+        conversation,  # Sends entire conversation history
+        max_gen_len=max_gen_len,
+        temperature=temperature,
+        top_p=top_p,
+    )
+    
+    # Add assistant's response to conversation history
+    assistant_message = result.generation
+    conversation.append(assistant_message)
+```
+For each user message:
+1. Adds the user's message to conversation history
+2. Sends the entire conversation to the model
+3. Gets the response and adds it to history
+
+5. Main Function:
+```python:chat.py
+def main():
+    # Get checkpoint directory from environment or use default
+    ckpt_dir = os.getenv('CHECKPOINT_DIR', os.path.expanduser('~/.llama/checkpoints/Llama3.2-3B'))
+    
+    # Initialize the model
+    generator = setup_model(ckpt_dir)
+    
+    # Set default system prompt
+    default_system_prompt = "You are a helpful, respectful and honest assistant..."
+    
+    # Start chat loop
+    chat_loop(generator, system_prompt=default_system_prompt)
+```
+This ties everything together:
+1. Gets the model checkpoint location
+2. Sets up the model
+3. Defines default system prompt
+4. Starts the chat loop
+
+The key thing to note is that the script maintains the entire conversation history in memory, which is why you're needing to clear it frequently. Each message exchange adds to this history, and when it approaches `max_seq_len` (512 in your case), you'll need to clear it to prevent running out of context window space.
+
+---
+
+_**User**_
+
+Can you modify this so it doesn't send the entire history to the chat model and just the most recent one? 
+
+---
+
+_**Assistant**_
+
+
+
+Yes, I'll modify the chat loop to only send the most recent message along with the system prompt (if any). Here's the change:
+
+```python:chat.py
+def chat_loop(
+    generator: Llama,
+    system_prompt: Optional[str] = None,
+    temperature: float = 0.6,
+    top_p: float = 0.9,
+    max_gen_len: Optional[int] = None,
+):
+    """Run an interactive chat loop with the model."""
+    # Keep system prompt separate from conversation history
+    system_message = RawMessage(role="system", content=system_prompt) if system_prompt else None
+    
+    print("\nWelcome to Llama 3 Chat! Type 'quit' to exit, 'clear' to start a new conversation.")
+    print("You can also type 'system: <prompt>' to set a new system prompt.\n")
+    
+    while True:
+        # Get user input
+        user_input = input("\nYou: ").strip()
+        
+        # Handle special commands
+        if user_input.lower() == 'quit':
+            break
+        elif user_input.lower() == 'clear':
+            print("\nConversation cleared!")
+            continue
+        elif user_input.lower().startswith('system:'):
+            system_prompt = user_input[7:].strip()
+            system_message = RawMessage(role="system", content=system_prompt)
+            print("\nSystem prompt updated!")
+            continue
+        
+        # Create current conversation with just system prompt (if any) and current message
+        current_messages = []
+        if system_message:
+            current_messages.append(system_message)
+        current_messages.append(RawMessage(role="user", content=user_input))
+        
+        # Get model's response with just current message
+        result = generator.chat_completion(
+            current_messages,
+            max_gen_len=max_gen_len,
+            temperature=temperature,
+            top_p=top_p,
+        )
+        
+        # Print assistant's response
+        assistant_message = result.generation
+        print(f"\nAssistant: {assistant_message.content}")
+```
+
+Key changes:
+1. Removed the `conversation` list that was storing history
+2. Keep system prompt separate as `system_message`
+3. For each interaction, create a fresh `current_messages` list with:
+   - System prompt (if any)
+   - Current user message only
+4. Send only these messages to the model
+5. Don't store the assistant's responses anymore
+
+This should:
+- Use less memory
+- Prevent context window issues
+- Remove the need to clear the conversation
+- Still maintain the system prompt across interactions
+
+The tradeoff is that the model won't have access to conversation history, so it won't be able to reference previous messages. Each response will be based solely on the current question and system prompt.
+
+---
+
 
 
 ---
